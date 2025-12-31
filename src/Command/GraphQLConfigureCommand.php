@@ -37,7 +37,7 @@ class GraphQLConfigureCommand extends Command
      * {@inheritdoc}
      * @throws Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $isComposerCall = $input->getOption('composer');
 
@@ -57,7 +57,7 @@ class GraphQLConfigureCommand extends Command
         } else {
             $question = new ConfirmationQuestion(sprintf('Confirm creating class at %s ? [Y/n]', $schemaNamespace . '\\' . $className), true);
             if (!$inputHelper->ask($input, $output, $question)) {
-                return;
+                return Command::FAILURE;
             }
 
             if (!is_dir($graphqlPath)) {
@@ -72,7 +72,7 @@ class GraphQLConfigureCommand extends Command
             if (!file_exists($configFile)) {
                 $question = new ConfirmationQuestion(sprintf('Config file not found (look at %s). Create it? [Y/n]', $configFile), true);
                 if (!$inputHelper->ask($input, $output, $question)) {
-                    return;
+                    return Command::FAILURE;
                 }
 
                 touch($configFile);
@@ -105,6 +105,8 @@ CONFIG;
         } elseif (!$isComposerCall) {
             $output->writeln('GraphQL default route was found.');
         }
+
+        return Command::SUCCESS;
     }
 
     protected function getSchemaClassTemplate($nameSpace, $className = 'Schema'): string
