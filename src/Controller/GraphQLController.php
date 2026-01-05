@@ -90,7 +90,7 @@ class GraphQLController extends AbstractController
      * @throws NotFoundExceptionInterface
      * @throws UnableToInitializeSchemaServiceException
      */
-    private function makeSchemaService(): string
+    private function makeSchemaService(): mixed
     {
         if ($this->getSchemaService() && $this->container->has($this->getSchemaService())) {
             return $this->container->get($this->getSchemaService());
@@ -147,7 +147,8 @@ class GraphQLController extends AbstractController
     {
         $request = $this->container->get('request_stack')->getCurrentRequest();
         $query = $request->request->get('query');
-        $variables = $request->request->get('variables', []);
+        $variables = $request->request->get('variables');
+
         $isMultiQueryRequest = false;
         $queries = [];
 
