@@ -36,13 +36,6 @@ return static function (ContainerConfigurator $container): void {
         ->public();
 
     /*
-     * EVENT DISPATCHER
-     */
-    $services
-        ->set('graphql.event_dispatcher', EventDispatcher::class)
-        ->arg('$container', service('service_container'));
-
-    /*
      * SYMFONY CONTAINER BRIDGE
      */
     $services
@@ -73,7 +66,6 @@ return static function (ContainerConfigurator $container): void {
         ->set('graphql.processor', param('graphql.processor.class'))
         ->public()
         ->arg(0, service('graphql.execution_context'))
-        ->arg(1, service('graphql.event_dispatcher'))
         ->call('setSecurityManager', [service('graphql.security_manager')]);
 
     /*
