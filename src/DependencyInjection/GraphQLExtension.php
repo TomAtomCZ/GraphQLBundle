@@ -46,8 +46,12 @@ class GraphQLExtension extends Extension
         $container->setParameter('graphql.security.white_list', $config['security']['white_list']);
 
 
-        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../../config'));
-        $loader->load('services.xml');
+        $loader = new Loader\PhpFileLoader(
+            $container,
+            new FileLocator(__DIR__ . '/../../config')
+        );
+
+        $loader->load('services.php');
     }
 
     private function getDefaultHeaders(): array
