@@ -11,11 +11,12 @@ use Exception;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
 use UnitEnum;
+use Youshido\GraphQL\Execution\Container\ContainerInterface;
 use Youshido\GraphQLBundle\Exception\UnableToInitializeSchemaServiceException;
 use Youshido\GraphQLBundle\Execution\Processor;
 
@@ -34,20 +35,19 @@ class GraphQLController extends AbstractController
     }
 
     /**
-     * @return JsonResponse
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws Exception
      */
     #[Route(path: '/graphql', name: 'youshido_graphql_default')]
-    public function defaultAction(): JsonResponse
+    public function default(): JsonResponse
     {
         try {
             $this->initializeSchemaService();
         } catch (UnableToInitializeSchemaServiceException $unableToInitializeSchemaServiceException) {
             return new JsonResponse(
                 [['message' => 'Schema class ' . $this->getSchemaClass() . ' does not exist']],
-                200,
+                Response::HTTP_OK,
                 $this->getResponseHeaders()
             );
         }
@@ -58,11 +58,11 @@ class GraphQLController extends AbstractController
 
         list($queries, $isMultiQueryRequest) = $this->getPayload();
 
-        $queryResponses = array_map(function (array $queryData) {
+        $queryResponses = array_map(function (array $queryData): array {
             return $this->executeQuery($queryData['query'], $queryData['variables']);
         }, $queries);
 
-        $response = new JsonResponse($isMultiQueryRequest ? $queryResponses : $queryResponses[0], 200, $this->getParameter('graphql.response.headers'));
+        $response = new JsonResponse($isMultiQueryRequest ? $queryResponses : $queryResponses[0], Response::HTTP_OK, $this->getParameter('graphql.response.headers'));
 
         if ($this->getParameter('graphql.response.json_pretty')) {
             $response->setEncodingOptions($response->getEncodingOptions() | JSON_PRETTY_PRINT);
@@ -86,12 +86,11 @@ class GraphQLController extends AbstractController
     }
 
     /**
-     * @return mixed|ContainerAwareInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws UnableToInitializeSchemaServiceException
      */
-    private function makeSchemaService(): mixed
+    private function makeSchemaService(): string
     {
         if ($this->getSchemaService() && $this->container->has($this->getSchemaService())) {
             return $this->container->get($this->getSchemaService());
@@ -107,16 +106,13 @@ class GraphQLController extends AbstractController
         }
 
         $schema = new $schemaClass();
-        if ($schema instanceof ContainerAwareInterface) {
+        if ($schema instanceof ContainerInterface && $this->container instanceof \Symfony\Component\DependencyInjection\ContainerInterface) {
             $schema->setContainer($this->container);
         }
 
         return $schema;
     }
 
-    /**
-     * @return string|null
-     */
     private function getSchemaService(): ?string
     {
         $serviceName = $this->getParameter('graphql.schema_service');
@@ -128,9 +124,6 @@ class GraphQLController extends AbstractController
         return $serviceName;
     }
 
-    /**
-     * @return string
-     */
     private function getSchemaClass(): string
     {
         return $this->getParameter('graphql.schema_class');
@@ -143,20 +136,18 @@ class GraphQLController extends AbstractController
 
     private function createEmptyResponse(): JsonResponse
     {
-        return new JsonResponse([], 200, $this->getResponseHeaders());
+        return new JsonResponse([], Response::HTTP_OK, $this->getResponseHeaders());
     }
 
     /**
-     * @return array
-     *
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
     private function getPayload(): array
     {
         $request = $this->container->get('request_stack')->getCurrentRequest();
-        $query = $request->get('query', null);
-        $variables = $request->get('variables', []);
+        $query = $request->request->get('query');
+        $variables = $request->request->get('variables', []);
         $isMultiQueryRequest = false;
         $queries = [];
 

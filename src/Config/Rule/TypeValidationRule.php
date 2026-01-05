@@ -19,9 +19,9 @@ class TypeValidationRule extends BaseTypeValidationRule
             return false;
         }
 
-        if (($ruleInfo == TypeService::TYPE_CALLABLE) && (
+        if (($ruleInfo === TypeService::TYPE_CALLABLE) && (
                 is_callable($data) ||
-                (is_array($data) && count($data) == 2 && str_starts_with((string)$data[0], '@')))
+                (is_array($data) && count($data) === 2 && str_starts_with((string)$data[0], '@')))
         ) {
             return true;
         }

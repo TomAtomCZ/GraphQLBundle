@@ -47,30 +47,29 @@ class SymfonyContainer implements ContainerInterface
         return $this->container->has($id);
     }
 
-    public function initialized($id): bool
+    public function initialized(string $id): bool
     {
         return $this->container->initialized($id);
     }
 
-    public function setParameter($name, $value): static
+    public function setParameter(string $name, array|bool|string|int|float|UnitEnum|null $value): static
     {
         $this->container->setParameter($name, $value);
         return $this;
     }
 
-    public function getParameter($name): UnitEnum|float|int|bool|array|string|null
+    public function getParameter(string $name): UnitEnum|float|int|bool|array|string|null
     {
         return $this->container->getParameter($name);
     }
 
-    public function hasParameter($name): bool
+    public function hasParameter(string $name): bool
     {
         return $this->container->hasParameter($name);
     }
 
     /**
      * Exists temporarily for ContainerAwareField that is to be removed in 1.5
-     * @return \Symfony\Component\DependencyInjection\ContainerInterface|null
      */
     public function getSymfonyContainer(): ?\Symfony\Component\DependencyInjection\ContainerInterface
     {

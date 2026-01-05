@@ -5,10 +5,10 @@
         http://symfony.com/schema/routing/routing-1.0.xsd">
 
     <route id="youshido_graphql_default" path="/graphql">
-        <default key="_controller">Youshido\GraphQLBundle\Controller\GraphQLController::defaultAction</default>
+        <default key="_controller">Youshido\GraphQLBundle\Controller\GraphQLController::default</default>
     </route>
 
     <route id="youshido_graphql_explorer" path="/graphql/explorer">
-        <default key="_controller">Youshido\GraphQLBundle\Controller\GraphQLExplorerController::explorerAction</default>
+        <default key="_controller">Youshido\GraphQLBundle\Controller\GraphQLExplorerController::explorer</default>
     </route>
 </routes>

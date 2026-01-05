@@ -19,35 +19,21 @@ interface SecurityManagerInterface
 
     /**
      * @param $attribute string
-     *
-     * @return bool
      */
     public function isSecurityEnabledFor(string $attribute): bool;
 
-    /**
-     * @param ResolveInfo $resolveInfo
-     * @return bool
-     */
     public function isGrantedToFieldResolve(ResolveInfo $resolveInfo): bool;
 
-    /**
-     * @param Query $query
-     * @return bool
-     */
     public function isGrantedToOperationResolve(Query $query): bool;
 
     /**
      *
-     * @param ResolveInfo $resolveInfo
-     * @return mixed
      * @throw \Exception
      */
     public function createNewFieldAccessDeniedException(ResolveInfo $resolveInfo): mixed;
 
     /**
      *
-     * @param Query $query
-     * @return mixed
      * @throw \Exception
      */
     public function createNewOperationAccessDeniedException(Query $query): mixed;

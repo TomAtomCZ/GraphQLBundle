@@ -12,16 +12,12 @@ use DateTimeZone;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class GraphQLExplorerController extends AbstractController
 {
-    /**
-     * @param Request $request
-     * @return Response
-     */
     #[Route(path: '/graphql/explorer', name: 'youshido_graphql_explorer')]
-    public function explorerAction(Request $request): Response
+    public function explorer(Request $request): Response
     {
         // If there was access token in query
         $accessToken = $request->query->get('access_token') ?? '';

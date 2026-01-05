@@ -15,11 +15,6 @@ class BlacklistVoter extends AbstractListVoter
 {
     /**
      * Perform a single access check operation on a given attribute, subject and token.
-     *
-     * @param string $attribute
-     * @param mixed $subject
-     * @param TokenInterface $token
-     * @return bool
      */
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {

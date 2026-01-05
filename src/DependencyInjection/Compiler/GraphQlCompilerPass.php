@@ -63,11 +63,6 @@ class GraphQlCompilerPass implements CompilerPassInterface
         }
     }
 
-    /**
-     * @param ContainerBuilder $container
-     * @param string|null $voterClass
-     * @param array $list
-     */
     private function addListVoter(ContainerBuilder $container, ?string $voterClass, array $list): void
     {
         if ($list !== []) {

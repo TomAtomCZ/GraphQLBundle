@@ -33,7 +33,7 @@ abstract class AbstractListVoter extends Voter
         $this->list = $list;
     }
 
-    public function setEnabled($enabled): void
+    public function setEnabled(bool $enabled): void
     {
         $this->enabled = $enabled;
     }

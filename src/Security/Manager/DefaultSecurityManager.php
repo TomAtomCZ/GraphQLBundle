@@ -29,16 +29,11 @@ class DefaultSecurityManager implements SecurityManagerInterface
         $this->rootOperationSecurityEnabled = $guardConfig['operation'] ?? false;
     }
 
-    /**
-     * @param string $attribute
-     *
-     * @return bool
-     */
     public function isSecurityEnabledFor(string $attribute): bool
     {
-        if (SecurityManagerInterface::RESOLVE_FIELD_ATTRIBUTE == $attribute) {
+        if (SecurityManagerInterface::RESOLVE_FIELD_ATTRIBUTE === $attribute) {
             return $this->fieldSecurityEnabled;
-        } elseif (SecurityManagerInterface::RESOLVE_ROOT_OPERATION_ATTRIBUTE == $attribute) {
+        } elseif (SecurityManagerInterface::RESOLVE_ROOT_OPERATION_ATTRIBUTE === $attribute) {
             return $this->rootOperationSecurityEnabled;
         }
 
@@ -75,7 +70,6 @@ class DefaultSecurityManager implements SecurityManagerInterface
 
     /**
      *
-     * @return mixed
      * @throw \Exception
      */
     public function createNewFieldAccessDeniedException(ResolveInfo $resolveInfo): AccessDeniedException
@@ -85,7 +79,6 @@ class DefaultSecurityManager implements SecurityManagerInterface
 
     /**
      *
-     * @return mixed
      * @throw \Exception
      */
     public function createNewOperationAccessDeniedException(Query $query): AccessDeniedException

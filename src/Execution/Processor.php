@@ -3,10 +3,9 @@
 namespace Youshido\GraphQLBundle\Execution;
 
 use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\HttpKernel\Kernel;
 use Youshido\GraphQL\Exception\ResolveException;
+use Youshido\GraphQL\Execution\Container\ContainerInterface;
 use Youshido\GraphQL\Execution\Context\ExecutionContextInterface;
 use Youshido\GraphQL\Execution\Processor as BaseProcessor;
 use Youshido\GraphQL\Execution\ResolveInfo;
@@ -26,7 +25,7 @@ class Processor extends BaseProcessor
 
     private ?SecurityManagerInterface $securityManager = null;
 
-    private EventDispatcherInterface $eventDispatcher;
+    private readonly EventDispatcherInterface $eventDispatcher;
 
     /**
      * Constructor.
@@ -54,7 +53,7 @@ class Processor extends BaseProcessor
         return parent::processPayload($payload, $variables);
     }
 
-    public function setLogger($logger = null): void
+    public function setLogger(?LoggerInterface $logger = null): void
     {
         $this->logger = $logger;
     }
@@ -90,8 +89,8 @@ class Processor extends BaseProcessor
         $resolveInfo = $this->createResolveInfo($field, $astFields);
         $this->assertClientHasFieldAccess($resolveInfo);
 
-        if (in_array(ContainerAwareInterface::class, class_implements($field))) {
-            /** @var $field ContainerAwareInterface */
+        if (in_array(ContainerInterface::class, class_implements($field))) {
+            /** @var $field ContainerInterface */
             $field->setContainer($this->executionContext->getContainer()->getSymfonyContainer());
         }
 
@@ -126,14 +125,7 @@ class Processor extends BaseProcessor
 
     private function dispatchResolveEvent(ResolveEvent $event, string $name): void
     {
-        $major = Kernel::MAJOR_VERSION;
-        $minor = Kernel::MINOR_VERSION;
-
-        if ($major > 4 || ($major === 4 && $minor >= 3)) {
-            $this->eventDispatcher->dispatch($event, $name);
-        } else {
-            $this->eventDispatcher->dispatch($name);
-        }
+        $this->eventDispatcher->dispatch($event, $name);
     }
 
     private function assertClientHasFieldAccess(ResolveInfo $resolveInfo): void
@@ -145,8 +137,8 @@ class Processor extends BaseProcessor
         }
     }
 
-    private function isServiceReference($resolveFunc): bool
+    private function isServiceReference(callable $resolveFunc): bool
     {
-        return is_array($resolveFunc) && count($resolveFunc) == 2 && str_starts_with((string)$resolveFunc[0], '@');
+        return is_array($resolveFunc) && count($resolveFunc) === 2 && str_starts_with((string)$resolveFunc[0], '@');
     }
 }

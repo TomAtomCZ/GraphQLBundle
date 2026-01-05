@@ -28,8 +28,6 @@ class ResolveEvent extends GenericEvent
 
     /**
      * Returns the field.
-     *
-     * @return FieldInterface
      */
     public function getField(): FieldInterface
     {
@@ -38,8 +36,6 @@ class ResolveEvent extends GenericEvent
 
     /**
      * Returns the AST fields.
-     *
-     * @return array
      */
     public function getAstFields(): array
     {
@@ -58,10 +54,8 @@ class ResolveEvent extends GenericEvent
 
     /**
      * Allows the event listener to manipulate the resolved value.
-     *
-     * @param $resolvedValue
      */
-    public function setResolvedValue($resolvedValue): void
+    public function setResolvedValue(mixed $resolvedValue): void
     {
         $this->resolvedValue = $resolvedValue;
     }
