@@ -77,7 +77,7 @@ class Processor extends BaseProcessor
     /**
      * @throws ResolveException
      */
-    protected function doResolve(FieldInterface $field, AstFieldInterface $ast, $parentValue = null)
+    protected function doResolve(FieldInterface $field, AstFieldInterface $ast, $parentValue = null): mixed
     {
         /** @var Query|AstField $ast */
         $arguments = $this->parseArgumentsValues($field, $ast);
