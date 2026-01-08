@@ -17,7 +17,7 @@ class SymfonyContainer implements ContainerInterface
 {
     protected \Symfony\Component\DependencyInjection\ContainerInterface $container;
 
-    public function setContainer(\Symfony\Component\DependencyInjection\ContainerInterface $container = null): void
+    public function setContainer(?\Symfony\Component\DependencyInjection\ContainerInterface $container = null): void
     {
         if (1 > func_num_args()) {
             trigger_deprecation('symfony/dependency-injection', '6.2', 'Calling "%s::%s()" without any arguments is deprecated, pass null explicitly instead.', __CLASS__, __FUNCTION__);
