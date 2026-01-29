@@ -13,6 +13,7 @@ use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use UnitEnum;
@@ -40,11 +41,11 @@ class GraphQLController extends AbstractController
      * @throws Exception
      */
     #[Route(path: '/graphql', name: 'youshido_graphql_default')]
-    public function default(): JsonResponse
+    public function default(Request $request): JsonResponse
     {
         try {
             $this->initializeSchemaService();
-        } catch (UnableToInitializeSchemaServiceException $unableToInitializeSchemaServiceException) {
+        } catch (UnableToInitializeSchemaServiceException) {
             return new JsonResponse(
                 [['message' => 'Schema class ' . $this->getSchemaClass() . ' does not exist']],
                 Response::HTTP_OK,
@@ -52,11 +53,11 @@ class GraphQLController extends AbstractController
             );
         }
 
-        if ($this->container->get('request_stack')->getCurrentRequest()->getMethod() == 'OPTIONS') {
+        if ($request->getMethod() === 'OPTIONS') {
             return $this->createEmptyResponse();
         }
 
-        list($queries, $isMultiQueryRequest) = $this->getPayload();
+        list($queries, $isMultiQueryRequest) = $this->getPayload($request);
 
         $queryResponses = array_map(function (array $queryData): array {
             return $this->executeQuery($queryData['query'], $queryData['variables']);
@@ -139,15 +140,15 @@ class GraphQLController extends AbstractController
         return new JsonResponse([], Response::HTTP_OK, $this->getResponseHeaders());
     }
 
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
-     */
-    private function getPayload(): array
+    private function getPayload(Request $request): array
     {
-        $request = $this->container->get('request_stack')->getCurrentRequest();
-        $query = $request->request->get('query');
-        $variables = $request->request->get('variables');
+        $query = $request->isMethod('GET')
+            ? $request->query->get('query')
+            : $request->request->get('query');
+
+        $variables = $request->isMethod('GET')
+            ? $request->query->get('variables')
+            : $request->request->get('variables');
 
         $isMultiQueryRequest = false;
         $queries = [];
